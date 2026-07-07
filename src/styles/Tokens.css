@@ -1,0 +1,130 @@
+/* ============================================================
+   Silicon Minds — Design Tokens
+   Source of truth: Section 5.2 Style Guide Snapshot
+
+   IMPORTANT: :root variables are global by nature (harmless — they
+   just declare values, they don't style anything on their own).
+   Every actual visual rule below is scoped under .exhibit-page so
+   it only affects OUR content, never the shared layout chrome
+   (header, nav, "Exhibit" title, etc.) that we're not allowed to
+   modify.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap');
+
+:root {
+  /* Colors */
+  --color-primary: #00E5FF;      /* cyan-400 — era highlights, active states, callouts */
+  --color-secondary: #7B61FF;    /* violet-500 — AI & Efficiency accent, hover, quiz feedback */
+  --color-background: #0A0A0F;   /* page-level background */
+  --color-surface: #141420;      /* era cards, quiz panels, viewer container */
+  --color-text-primary: #F0F0F5; /* body copy, headings */
+  --color-text-secondary: #8888A0; /* metadata, dates, captions, disabled */
+
+  /* Semantic feedback colors (from Interactive Feedback token) */
+  --color-success: #00E676;      /* correct answer glow */
+  --color-error: #FF5252;        /* wrong answer flash */
+
+  /* Borders */
+  --border-color: rgba(255, 255, 255, 0.08); /* default card borders, inactive nodes */
+
+  /* Typography */
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --font-size-body: 16px;
+  --line-height-body: 1.7;
+  --font-size-mono: 13px;
+
+  /* Border Radius */
+  --radius-sm: 4px;   /* tags, chips */
+  --radius-md: 8px;   /* cards, inputs */
+  --radius-lg: 16px;  /* major panels, simulator container */
+
+  /* Spacing Scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 40px;
+  --space-6: 64px;
+
+  /* Shadows */
+  --shadow-card: 0 0 0 1px rgba(0, 229, 255, 0.12); /* subtle cyan glow-border */
+
+  /* Animation Durations */
+  --duration-fast: 150ms;      /* hover feedback */
+  --duration-standard: 300ms;  /* transitions */
+  --duration-entrance: 500ms;  /* era card reveal, quiz score */
+
+  /* Animation Easing */
+  --ease-snappy: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Grid */
+  --grid-gutter: 24px;
+  --grid-margin: 40px;
+
+  /* Responsive Breakpoints (for reference in JS; CSS uses @media directly) */
+  --breakpoint-mobile: 640px;
+  --breakpoint-tablet: 1024px;
+}
+
+/* ============================================================
+   Scoped styles — everything below only applies inside
+   elements with the .exhibit-page class (our content wrapper),
+   never to the surrounding layout.
+   ============================================================ */
+
+.exhibit-page {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+}
+
+.exhibit-page * {
+  box-sizing: border-box;
+}
+
+.exhibit-page h1,
+.exhibit-page h2,
+.exhibit-page h3,
+.exhibit-page h4,
+.exhibit-page h5,
+.exhibit-page h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.exhibit-page code,
+.exhibit-page .spec-value,
+.exhibit-page .benchmark-value {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-mono);
+}
+
+.exhibit-page a {
+  color: var(--color-primary);
+}
+
+/* Reduced motion — required by Accessibility section 5.3 */
+@media (prefers-reduced-motion: reduce) {
+  .exhibit-page *,
+  .exhibit-page *::before,
+  .exhibit-page *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Visible focus ring — required by Accessibility section 5.3 */
+.exhibit-page :focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}

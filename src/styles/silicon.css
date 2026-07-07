@@ -1,0 +1,109 @@
+
+@import "tailwindcss";
+
+.silicon-exhibit {
+  /* -- Color tokens (Section 5.2) -- */
+  --se-primary: #00e5ff;      /* cyan-400: era highlights, active states */
+  --se-secondary: #7b61ff;    /* violet-500: AI era accent, hover, quiz feedback */
+  --se-bg: #0a0a0f;           /* page-level background */
+  --se-surface: #141420;      /* cards, panels, viewer container */
+  --se-text: #f0f0f5;         /* primary text */
+  --se-muted: #8888a0;        /* secondary text / metadata */
+  --se-border: rgba(255, 255, 255, 0.08);
+  --se-glow: rgba(0, 229, 255, 0.12);
+  --se-success: #3ddc84;
+  --se-danger: #ff5c5c;
+
+  /* -- Radius (Section 5.2) -- */
+  --se-radius-sm: 4px;
+  --se-radius-md: 8px;
+  --se-radius-lg: 16px;
+
+  /* -- Spacing scale -- */
+  --se-space-1: 4px;
+  --se-space-2: 8px;
+  --se-space-3: 16px;
+  --se-space-4: 24px;
+  --se-space-5: 40px;
+  --se-space-6: 64px;
+
+  /* -- Motion -- */
+  --se-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --se-fast: 150ms;
+  --se-standard: 300ms;
+  --se-entrance: 500ms;
+
+  /* -- Typography -- */
+  --se-font-heading: "Space Grotesk Variable", sans-serif;
+  --se-font-body: "Inter Variable", sans-serif;
+  --se-font-mono: "JetBrains Mono", monospace;
+
+  /* -- Component background -- */
+  background: var(--se-bg);
+  color: var(--se-text);
+  font-family: var(--se-font-body);
+  border-radius: var(--se-radius-lg);
+  padding: var(--se-space-5) var(--se-space-4);
+  margin: var(--se-space-4) 0;
+  line-height: 1.7;
+}
+
+.silicon-exhibit h1,
+.silicon-exhibit h2,
+.silicon-exhibit h3,
+.silicon-exhibit h4 {
+  font-family: var(--se-font-heading);
+  font-weight: 700;
+  color: var(--se-text);
+  letter-spacing: -0.01em;
+}
+
+.silicon-exhibit h2 {
+  border-bottom: 1px solid var(--se-border);
+  padding-bottom: var(--se-space-2);
+  margin-top: var(--se-space-6);
+  color: var(--se-primary);
+}
+
+.silicon-exhibit a {
+  color: var(--se-primary);
+}
+
+.silicon-exhibit code,
+.silicon-exhibit .se-mono {
+  font-family: var(--se-font-mono);
+  font-size: 13px;
+}
+
+/* Reusable "card" surface used across all three interactive components */
+.silicon-exhibit .se-card {
+  background: var(--se-surface);
+  border: 1px solid var(--se-border);
+  border-radius: var(--se-radius-md);
+  box-shadow: 0 0 0 1px var(--se-glow);
+  transition: border-color var(--se-standard) var(--se-ease),
+    transform var(--se-fast) var(--se-ease);
+}
+
+.silicon-exhibit .se-card--interactive:hover {
+  border-color: var(--se-primary);
+  transform: scale(1.02);
+}
+
+.silicon-exhibit .se-pill {
+  border-radius: var(--se-radius-sm);
+  font-family: var(--se-font-mono);
+  font-size: 12px;
+}
+
+.silicon-exhibit .se-focusable:focus-visible {
+  outline: 2px solid var(--se-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .silicon-exhibit * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
