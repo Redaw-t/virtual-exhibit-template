@@ -1,135 +1,250 @@
+import { useState, useRef, useCallback } from 'react';
+import './TimelineExplorer.css';
 
-import { useState, useMemo } from "react";
-import { eras } from "./eraData.js";
+/* ============================================================
+   Era + chip data
+   Source: Section 2.2 (era table) + representative flagship
+   chips named in the proposal. Specs are illustrative,
+   approximate figures for teaching purposes.
+   ============================================================ */
 
-const allChips = eras.flatMap((era) =>
-  era.chips.map((chip) => ({ ...chip, eraId: era.id, eraName: era.name, eraAccent: era.accent }))
-);
-
-function SpecCard({ chip, onClose }) {
-  return (
-    <div className="se-card se-focusable relative w-full rounded-[var(--se-radius-md)] p-4 sm:p-5 animate-[se-enter_500ms_var(--se-ease)]">
-      <button
-        onClick={onClose}
-        aria-label={`Close ${chip.name} spec card`}
-        className="se-focusable absolute right-3 top-3 text-[var(--se-muted)] hover:text-[var(--se-primary)]"
-      >
-        ✕
-      </button>
-      <div className="flex items-center gap-2 mb-1">
-        <span
-          className="inline-block h-2.5 w-2.5 rounded-full"
-          style={{ background: chip.eraAccent }}
-        />
-        <span className="se-mono text-xs text-[var(--se-muted)]">{chip.eraName}</span>
-      </div>
-      <h4 className="text-lg font-bold text-[var(--se-text)] mb-1">{chip.name}</h4>
-      <p className="text-sm text-[var(--se-muted)] mb-3">{chip.notable}</p>
-      <dl className="se-mono grid grid-cols-2 gap-y-2 gap-x-3 text-xs">
-        <dt className="text-[var(--se-muted)]">Year</dt>
-        <dd className="text-right text-[var(--se-primary)]">{chip.year}</dd>
-        <dt className="text-[var(--se-muted)]">Cores</dt>
-        <dd className="text-right text-[var(--se-primary)]">{chip.cores}</dd>
-        <dt className="text-[var(--se-muted)]">Clock</dt>
-        <dd className="text-right text-[var(--se-primary)]">{chip.clockGHz} GHz</dd>
-        <dt className="text-[var(--se-muted)]">Process</dt>
-        <dd className="text-right text-[var(--se-primary)]">{chip.process}</dd>
-        <dt className="text-[var(--se-muted)] col-span-2 border-t border-[var(--se-border)] pt-2 mt-1">
-          Transistors
-        </dt>
-        <dd className="text-right text-[var(--se-primary)] col-span-2">{chip.transistors}</dd>
-      </dl>
-    </div>
-  );
-}
+const ERAS = [
+  {
+    id: 'birth',
+    name: 'Birth of Mobile CPUs',
+    period: 'Mid-1990s – Early 2000s',
+    tagline: 'Power efficiency becomes the whole design brief.',
+    chips: [
+      {
+        name: 'ARM7TDMI',
+        transistors: '~74,000',
+        cores: '1 core (RISC)',
+        clock: '20 – 133 MHz',
+        features: 'No cache, Thumb 16-bit instruction mode for code density, sub-1W power draw',
+      },
+      {
+        name: 'Intel StrongARM SA-110',
+        transistors: '~2.5 million',
+        cores: '1 core (RISC)',
+        clock: '100 – 233 MHz',
+        features: '16KB instruction + 16KB data cache, early PDA and handheld staple',
+      },
+    ],
+  },
+  {
+    id: 'arm-revolution',
+    name: 'The ARM Revolution',
+    period: '2007 – 2012',
+    tagline: 'The smartphone forces the chip to become a system.',
+    chips: [
+      {
+        name: 'ARM Cortex-A8',
+        transistors: '~43 million (core)',
+        cores: '1 core, superscalar',
+        clock: '600 MHz – 1 GHz',
+        features: 'NEON SIMD unit, licensed across the industry as the reference design',
+      },
+      {
+        name: 'Apple A4',
+        transistors: '~137 million',
+        cores: '1 core (Cortex-A8 based)',
+        clock: '~1 GHz',
+        features: 'Paired CPU with dedicated GPU for the original iPad and iPhone 4',
+      },
+    ],
+  },
+  {
+    id: 'multicore',
+    name: 'The Multicore Era',
+    period: '2011 – 2014',
+    tagline: 'Going wide instead of fast to beat the power wall.',
+    chips: [
+      {
+        name: 'NVIDIA Tegra 2',
+        transistors: '~260 million',
+        cores: '2 cores (Cortex-A9)',
+        clock: '1 GHz',
+        features: 'First dual-core design shipped at real volume in phones and tablets',
+      },
+      {
+        name: 'Qualcomm Snapdragon 600',
+        transistors: '~n/a (28nm HPm)',
+        cores: '4 cores (Krait 300)',
+        clock: 'up to 1.9 GHz',
+        features: 'Asynchronous per-core clocking, tuned for sustained multitasking',
+      },
+    ],
+  },
+  {
+    id: 'soc',
+    name: 'The System-on-Chip Era',
+    period: '2015 – 2020',
+    tagline: 'CPU, GPU, modem, and memory fuse onto one die.',
+    chips: [
+      {
+        name: 'Apple A9',
+        transistors: '~2 billion',
+        cores: '2 cores (Twister)',
+        clock: '~1.85 GHz',
+        features: '14/16nm process, tightly integrated GPU and memory controller',
+      },
+      {
+        name: 'Qualcomm Snapdragon 820',
+        transistors: '~n/a (14nm FinFET)',
+        cores: '4 cores (Kryo, big.LITTLE)',
+        clock: 'up to 2.15 GHz',
+        features: 'Integrated modem on-die, heterogeneous big.LITTLE task scheduling',
+      },
+    ],
+  },
+  {
+    id: 'ai-efficiency',
+    name: 'The AI & Efficiency Era',
+    period: '2021 – Present',
+    tagline: 'A dedicated brain-within-a-brain for on-device AI.',
+    chips: [
+      {
+        name: 'Apple A17 Pro',
+        transistors: '~19 billion',
+        cores: '6 cores + 16-core Neural Engine',
+        clock: 'up to 3.78 GHz',
+        features: 'TSMC 3nm process, on-device AI inference without a cloud round trip',
+      },
+      {
+        name: 'Qualcomm Snapdragon 8 Gen 3',
+        transistors: '~n/a (4nm)',
+        cores: '8 cores + dedicated NPU',
+        clock: 'up to 3.3 GHz',
+        features: 'Hexagon NPU tuned for generative AI workloads run locally',
+      },
+    ],
+  },
+];
 
 export default function TimelineExplorer() {
-  const [activeEra, setActiveEra] = useState("all");
-  const [selected, setSelected] = useState([]); // up to 2 chip ids for comparison
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [selected, setSelected] = useState([]); // up to 2 era ids
+  const liveRegionRef = useRef(null);
 
-  const visibleChips = useMemo(
-    () => (activeEra === "all" ? allChips : allChips.filter((c) => c.eraId === activeEra)),
-    [activeEra]
-  );
+  const visibleEras = activeFilter === 'all'
+    ? ERAS
+    : ERAS.filter((e) => e.id === activeFilter);
 
-  function toggleChip(chipId) {
+  const toggleNode = useCallback((eraId) => {
     setSelected((prev) => {
-      if (prev.includes(chipId)) return prev.filter((id) => id !== chipId);
-      if (prev.length >= 2) return [prev[1], chipId]; // slide the window
-      return [...prev, chipId];
+      if (prev.includes(eraId)) {
+        return prev.filter((id) => id !== eraId);
+      }
+      if (prev.length >= 2) {
+        return [prev[1], eraId];
+      }
+      return [...prev, eraId];
     });
-  }
+  }, []);
 
-  const selectedChips = selected.map((id) => allChips.find((c) => c.id === id)).filter(Boolean);
+  const selectedEras = ERAS.filter((e) => selected.includes(e.id));
+
+  const summaryText = selectedEras.length === 0
+    ? 'No era selected.'
+    : selectedEras.length === 1
+      ? `Showing specifications for ${selectedEras[0].name}, ${selectedEras[0].period}.`
+      : `Comparing ${selectedEras[0].name} and ${selectedEras[1].name}.`;
 
   return (
-    <div className="silicon-exhibit not-prose">
-      <style>{`@keyframes se-enter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+    <div className="timeline-explorer">
+      <div className="timeline-explorer__header">
+        <h3 className="timeline-explorer__title">Microprocessor Timeline Explorer</h3>
+        <p className="timeline-explorer__hint">
+          Select an era to view its specifications. Select a second era to compare them side by side.
+        </p>
+      </div>
 
-      {/* Era filter pills */}
-      <div className="flex gap-2 overflow-x-auto pb-3 mb-4 -mx-1 px-1">
+      {/* Era filter buttons */}
+      <div className="timeline-explorer__filters" role="group" aria-label="Filter timeline by era">
         <button
-          onClick={() => setActiveEra("all")}
-          className={`se-pill se-focusable shrink-0 px-3 py-1.5 border transition-colors duration-150 ${
-            activeEra === "all"
-              ? "border-[var(--se-primary)] text-[var(--se-primary)]"
-              : "border-[var(--se-border)] text-[var(--se-muted)] hover:text-[var(--se-text)]"
-          }`}
+          type="button"
+          className={`timeline-explorer__filter-pill${activeFilter === 'all' ? ' is-active' : ''}`}
+          onClick={() => setActiveFilter('all')}
+          aria-pressed={activeFilter === 'all'}
         >
-          All eras
+          All Eras
         </button>
-        {eras.map((era) => (
+        {ERAS.map((era) => (
           <button
             key={era.id}
-            onClick={() => setActiveEra(era.id)}
-            className={`se-pill se-focusable shrink-0 px-3 py-1.5 border transition-colors duration-150 ${
-              activeEra === era.id
-                ? "border-[var(--se-primary)] text-[var(--se-primary)]"
-                : "border-[var(--se-border)] text-[var(--se-muted)] hover:text-[var(--se-text)]"
-            }`}
+            type="button"
+            className={`timeline-explorer__filter-pill${activeFilter === era.id ? ' is-active' : ''}`}
+            onClick={() => setActiveFilter(era.id)}
+            aria-pressed={activeFilter === era.id}
           >
             {era.name}
           </button>
         ))}
       </div>
 
-      {/* Timeline track: horizontal scroll on desktop, stacked on mobile */}
-      <div className="flex gap-4 overflow-x-auto pb-4 md:pb-6 snap-x snap-mandatory sm:flex-row flex-col sm:overflow-x-auto overflow-visible">
-        {visibleChips.map((chip) => {
-          const isSelected = selected.includes(chip.id);
+      {/* Timeline track */}
+      <div className="timeline-explorer__track" role="list">
+        {visibleEras.map((era) => {
+          const isSelected = selected.includes(era.id);
+          const isDimmed = selected.length > 0 && !isSelected;
           return (
             <button
-              key={chip.id}
-              onClick={() => toggleChip(chip.id)}
-              className={`se-card se-focusable se-card--interactive snap-start shrink-0 w-full sm:w-52 text-left p-4 rounded-[var(--se-radius-md)] ${
-                isSelected ? "border-[var(--se-primary)]" : ""
-              }`}
-              style={{ borderColor: isSelected ? "var(--se-primary)" : undefined }}
+              key={era.id}
+              type="button"
+              role="listitem"
+              className={`timeline-explorer__node${isSelected ? ' is-selected' : ''}${isDimmed ? ' is-dimmed' : ''}`}
+              onClick={() => toggleNode(era.id)}
               aria-pressed={isSelected}
+              aria-label={`${era.name}, ${era.period}. ${isSelected ? 'Selected' : 'Not selected'}.`}
             >
-              <span
-                className="inline-block h-2 w-2 rounded-full mb-2"
-                style={{ background: chip.eraAccent }}
-              />
-              <div className="se-mono text-xs text-[var(--se-muted)] mb-1">{chip.year}</div>
-              <div className="font-bold text-[var(--se-text)] leading-tight">{chip.name}</div>
-              <div className="text-xs text-[var(--se-muted)] mt-1">{chip.eraName}</div>
+              <span className="timeline-explorer__node-dot" />
+              <span className="timeline-explorer__node-period">{era.period}</span>
+              <span className="timeline-explorer__node-name">{era.name}</span>
             </button>
           );
         })}
       </div>
 
-      <p className="text-xs text-[var(--se-muted)] mb-4">
-        Tap up to two chips to compare their specs side by side.
+      {/* Live region for screen readers */}
+      <p className="timeline-explorer__sr-only" role="region" aria-live="polite" ref={liveRegionRef}>
+        {summaryText}
       </p>
 
-      {/* Spec card(s) */}
-      {selectedChips.length > 0 && (
+      {/* Spec cards: single or comparative */}
+      {selectedEras.length > 0 && (
         <div
-          className={`grid gap-4 ${selectedChips.length === 2 ? "sm:grid-cols-2" : "sm:grid-cols-1"}`}
+          className={`timeline-explorer__spec-panel${selectedEras.length === 2 ? ' is-comparative' : ''}`}
         >
-          {selectedChips.map((chip) => (
-            <SpecCard key={chip.id} chip={chip} onClose={() => toggleChip(chip.id)} />
+          {selectedEras.map((era) => (
+            <div key={era.id} className="timeline-explorer__spec-card">
+              <div className="timeline-explorer__spec-card-header">
+                <span className="timeline-explorer__spec-card-period">{era.period}</span>
+                <h4 className="timeline-explorer__spec-card-title">{era.name}</h4>
+                <p className="timeline-explorer__spec-card-tagline">{era.tagline}</p>
+              </div>
+              <div className="timeline-explorer__spec-chips">
+                {era.chips.map((chip) => (
+                  <div key={chip.name} className="timeline-explorer__chip-spec">
+                    <h5 className="timeline-explorer__chip-name">{chip.name}</h5>
+                    <dl className="timeline-explorer__chip-dl">
+                      <div>
+                        <dt>Transistors</dt>
+                        <dd>{chip.transistors}</dd>
+                      </div>
+                      <div>
+                        <dt>Cores</dt>
+                        <dd>{chip.cores}</dd>
+                      </div>
+                      <div>
+                        <dt>Clock</dt>
+                        <dd>{chip.clock}</dd>
+                      </div>
+                    </dl>
+                    <p className="timeline-explorer__chip-features">{chip.features}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       )}
