@@ -1,255 +1,234 @@
+// src/data/quizQuestions.js
+// 30 questions total, 6 per era. Each question has 4 choices; `correct` is the
+// index into `choices` at authoring time (choices get shuffled at runtime).
+// `explanation` is shown only when the visitor picks a wrong answer.
 
-import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { eras } from "./eraData.js";
+export const ERAS = [
+  "Birth of Mobile CPUs",
+  "The ARM Revolution",
+  "The Multicore Era",
+  "The System-on-Chip Era",
+  "The AI & Efficiency Era",
+];
 
-const WORKLOAD_UNITS = 100; // arbitrary "amount of work" every era must complete
-const BASE_MS = 3500; // wall-clock time the fastest possible run could take
+export const QUESTIONS = [
+  // ---------- Era 1: Birth of Mobile CPUs (mid-1990s–early 2000s) ----------
+  {
+    era: "Birth of Mobile CPUs",
+    question: "What instruction set style did most early mobile processors share?",
+    choices: ["RISC (Reduced Instruction Set Computing)", "CISC (Complex Instruction Set Computing)", "VLIW", "SIMD-only"],
+    correct: 0,
+    explanation: "Early mobile chips like the ARM7TDMI were RISC designs, favoring simple instructions for lower power draw.",
+  },
+  {
+    era: "Birth of Mobile CPUs",
+    question: "Which company originally designed the ARM7TDMI core?",
+    choices: ["Intel", "ARM Holdings", "Texas Instruments", "IBM"],
+    correct: 1,
+    explanation: "ARM Holdings designed the ARM7TDMI, one of the earliest processors adapted for mobile phones.",
+  },
+  {
+    era: "Birth of Mobile CPUs",
+    question: "Intel's early mobile processor line, adapted from desktop RISC research, was called:",
+    choices: ["StrongARM", "Atom", "Itanium", "Xeon"],
+    correct: 0,
+    explanation: "Intel's StrongARM line was one of the first mobile-focused processors of this era.",
+  },
+  {
+    era: "Birth of Mobile CPUs",
+    question: "Which processor family did Motorola contribute to early mobile devices?",
+    choices: ["PowerPC G4", "DragonBall", "68000 Desktop", "Snapdragon"],
+    correct: 1,
+    explanation: "Motorola's DragonBall family powered many early PDAs and mobile communication devices.",
+  },
+  {
+    era: "Birth of Mobile CPUs",
+    question: "What was the single biggest design constraint driving this era's mobile chips?",
+    choices: ["Graphics rendering power", "Low power consumption for battery life", "AI acceleration", "Multi-core throughput"],
+    correct: 1,
+    explanation: "Battery life was the dominant constraint, pushing designers toward simple, power-sipping RISC cores.",
+  },
+  {
+    era: "Birth of Mobile CPUs",
+    question: "What were these earliest mobile processors primarily designed for?",
+    choices: ["Gaming handhelds", "Mobile communication devices", "Laptops", "Servers"],
+    correct: 1,
+    explanation: "This era's chips were built for simple mobile communication devices, not the multi-purpose smartphones that came later.",
+  },
 
-// Pick the flagship (highest perfIndex) chip to represent an era in the race.
-function flagship(era) {
-  return era.chips.reduce((best, c) => (c.perfIndex > best.perfIndex ? c : best), era.chips[0]);
-}
+  // ---------- Era 2: The ARM Revolution (2007–2012) ----------
+  {
+    era: "The ARM Revolution",
+    question: "Which ARM core became closely associated with the rise of the smartphone in this era?",
+    choices: ["Cortex-A8", "Cortex-A76", "Cortex-M0", "Neoverse N1"],
+    correct: 0,
+    explanation: "The ARM Cortex-A8 was a defining core as ARM architecture took over smartphone design.",
+  },
+  {
+    era: "The ARM Revolution",
+    question: "What was Apple's first in-house mobile chip, launched in this era?",
+    choices: ["Apple A4", "Apple A9", "Apple M1", "Apple A17 Pro"],
+    correct: 0,
+    explanation: "The Apple A4 marked Apple's entry into designing its own mobile silicon.",
+  },
+  {
+    era: "The ARM Revolution",
+    question: "Qualcomm's chip series that debuted in this era was called:",
+    choices: ["Snapdragon S1", "Snapdragon 8 Gen 3", "Snapdragon 600", "Snapdragon 820"],
+    correct: 0,
+    explanation: "Snapdragon S1 was Qualcomm's early entry as ARM chips took over the smartphone market.",
+  },
+  {
+    era: "The ARM Revolution",
+    question: "Alongside the CPU, what new dedicated processing blocks began appearing on mobile chips?",
+    choices: ["Neural Processing Units (NPUs)", "ISPs and DSPs", "Discrete GPUs", "Quantum co-processors"],
+    correct: 1,
+    explanation: "Dedicated ISPs (Image Signal Processors) and DSPs (Digital Signal Processors) emerged to handle camera and signal tasks.",
+  },
+  {
+    era: "The ARM Revolution",
+    question: "What does 'ISP' stand for in the context of a mobile chip?",
+    choices: ["Internet Service Processor", "Image Signal Processor", "Instruction Set Pipeline", "Integrated Storage Port"],
+    correct: 1,
+    explanation: "An Image Signal Processor handles camera sensor data — a new addition to mobile chips in this era.",
+  },
+  {
+    era: "The ARM Revolution",
+    question: "Roughly what years does the ARM Revolution era span?",
+    choices: ["1995–2000", "2007–2012", "2015–2020", "2021–present"],
+    correct: 1,
+    explanation: "The ARM Revolution is framed as roughly 2007–2012, as ARM architecture came to dominate smartphones.",
+  },
 
-export default function EvolutionSimulator() {
-  const [chosen, setChosen] = useState([eras[0].id, eras[4].id]); // sensible default: oldest vs newest
-  const [running, setRunning] = useState(false);
-  const [progress, setProgress] = useState({}); // eraId -> 0..100
-  const [finishedAt, setFinishedAt] = useState({}); // eraId -> ms elapsed
-  const [expanded, setExpanded] = useState({ highlights: true, metrics: true });
-  const startRef = useRef(null);
-  const frameRef = useRef(null);
+  // ---------- Era 3: The Multicore Era (2011–2014) ----------
+  {
+    era: "The Multicore Era",
+    question: "How many CPU cores did the NVIDIA Tegra 2 introduce to mobile devices?",
+    choices: ["One", "Two", "Four", "Eight"],
+    correct: 1,
+    explanation: "The NVIDIA Tegra 2 was a dual-core chip, an early step into mobile multicore processing.",
+  },
+  {
+    era: "The Multicore Era",
+    question: "Which Apple chip belongs to this multicore era?",
+    choices: ["Apple A4", "Apple A6", "Apple A17 Pro", "Apple M1"],
+    correct: 1,
+    explanation: "The Apple A6 is one of the chips representing the multicore era of mobile processors.",
+  },
+  {
+    era: "The Multicore Era",
+    question: "Which Qualcomm chip line represents this era's multicore push?",
+    choices: ["Snapdragon S1", "Snapdragon 600", "Snapdragon 8 Gen 3", "Snapdragon 820"],
+    correct: 1,
+    explanation: "The Snapdragon 600 series exemplifies the quad-core mobile chips of this era.",
+  },
+  {
+    era: "The Multicore Era",
+    question: "What user-facing benefit did multicore CPUs mainly unlock?",
+    choices: ["Longer standby time only", "Better multitasking and app performance", "Cheaper manufacturing only", "Smaller screen sizes"],
+    correct: 1,
+    explanation: "Dual- and quad-core designs primarily boosted multitasking and overall app performance.",
+  },
+  {
+    era: "The Multicore Era",
+    question: "A 'quad-core' mobile processor has how many cores?",
+    choices: ["2", "4", "6", "8"],
+    correct: 1,
+    explanation: "Quad-core means four processing cores on the chip.",
+  },
+  {
+    era: "The Multicore Era",
+    question: "What mainly drove the industry toward adding more cores in this era?",
+    choices: ["Demand for richer, more complex apps and smoother multitasking", "A shortage of single-core chips", "New battery chemistry", "Regulatory requirements"],
+    correct: 0,
+    explanation: "Growing app complexity and consumer demand for smooth multitasking pushed designers to add cores.",
+  },
 
-  const selectedEras = eras.filter((e) => chosen.includes(e.id));
-  const maxPerf = Math.max(...eras.flatMap((e) => e.chips.map((c) => c.perfIndex)));
+  // ---------- Era 4: The System-on-Chip Era (2015–2020) ----------
+  {
+    era: "The System-on-Chip Era",
+    question: "What does 'SoC' stand for?",
+    choices: ["System-on-Chip", "Speed-of-Compute", "Silicon-over-Copper", "Standard-of-Chipsets"],
+    correct: 0,
+    explanation: "SoC stands for System-on-Chip: multiple subsystems combined onto one piece of silicon.",
+  },
+  {
+    era: "The System-on-Chip Era",
+    question: "What heterogeneous core design improved power efficiency in this era?",
+    choices: ["big.LITTLE", "SLI", "Hyper-Threading", "CrossFire"],
+    correct: 0,
+    explanation: "big.LITTLE pairs high-performance and high-efficiency cores to balance power and performance.",
+  },
+  {
+    era: "The System-on-Chip Era",
+    question: "Which Apple chip is an example from this era?",
+    choices: ["Apple A4", "Apple A6", "Apple A9", "Apple A17 Pro"],
+    correct: 2,
+    explanation: "The Apple A9 is one of the highly integrated SoCs representing this era.",
+  },
+  {
+    era: "The System-on-Chip Era",
+    question: "Which Qualcomm chip is an example from this era?",
+    choices: ["Snapdragon S1", "Snapdragon 600", "Snapdragon 820", "Snapdragon 8 Gen 3"],
+    correct: 2,
+    explanation: "The Snapdragon 820 is a highly integrated SoC from this era.",
+  },
+  {
+    era: "The System-on-Chip Era",
+    question: "Which Samsung chip is an example from this era?",
+    choices: ["Exynos 8890", "Exynos 990", "Exynos 2200", "Exynos 850"],
+    correct: 0,
+    explanation: "The Samsung Exynos 8890 is one of the SoCs highlighted for this era.",
+  },
+  {
+    era: "The System-on-Chip Era",
+    question: "What components were combined onto a single die in this era's SoCs?",
+    choices: ["CPU, GPU, modem, and memory", "Only CPU and battery", "Only camera and speaker", "Only storage and display"],
+    correct: 0,
+    explanation: "SoCs of this era combined CPU, GPU, modem, and memory onto one chip.",
+  },
 
-  function toggleEra(id) {
-    if (running) return; // don't let selection change mid-run
-    setChosen((prev) => {
-      if (prev.includes(id)) return prev.filter((e) => e !== id);
-      if (prev.length >= 4) return prev; // cap comparisons at 4 for legibility
-      return [...prev, id];
-    });
-  }
-
-  function startSimulation() {
-    if (selectedEras.length < 2) return;
-    setProgress(Object.fromEntries(selectedEras.map((e) => [e.id, 0])));
-    setFinishedAt({});
-    setRunning(true);
-    startRef.current = performance.now();
-    tick();
-  }
-
-  function tick() {
-    frameRef.current = requestAnimationFrame((now) => {
-      const elapsed = now - startRef.current;
-      let allDone = true;
-      const next = {};
-      const doneStamps = {};
-
-      selectedEras.forEach((era) => {
-        const chip = flagship(era);
-        // Faster chips (higher perfIndex) finish sooner: duration scales inversely.
-        const duration = BASE_MS * (maxPerf / chip.perfIndex) ** 0.4;
-        const pct = Math.min(100, (elapsed / duration) * 100);
-        next[era.id] = pct;
-        if (pct < 100) allDone = false;
-        else if (finishedAt[era.id] === undefined) doneStamps[era.id] = duration;
-      });
-
-      setProgress((prev) => ({ ...prev, ...next }));
-      if (Object.keys(doneStamps).length) {
-        setFinishedAt((prev) => ({ ...prev, ...doneStamps }));
-      }
-
-      if (!allDone) {
-        tick();
-      } else {
-        setRunning(false);
-      }
-    });
-  }
-
-  useEffect(() => () => frameRef.current && cancelAnimationFrame(frameRef.current), []);
-
-  function resetSimulation() {
-    if (frameRef.current) cancelAnimationFrame(frameRef.current);
-    setRunning(false);
-    setProgress({});
-    setFinishedAt({});
-  }
-
-  return (
-    <div className="silicon-exhibit not-prose">
-      {/* Era selection */}
-      <div className="mb-4">
-        <p className="se-mono text-xs text-[var(--se-muted)] mb-2">
-          Select 2–4 eras to compare ({selectedEras.length} selected)
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {eras.map((era) => {
-            const isOn = chosen.includes(era.id);
-            return (
-              <button
-                key={era.id}
-                onClick={() => toggleEra(era.id)}
-                disabled={running}
-                className={`se-pill se-focusable px-3 py-1.5 border transition-colors duration-150 disabled:opacity-40 ${
-                  isOn
-                    ? "border-[var(--se-primary)] text-[var(--se-primary)]"
-                    : "border-[var(--se-border)] text-[var(--se-muted)] hover:text-[var(--se-text)]"
-                }`}
-              >
-                {era.name}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="flex gap-3 mb-6">
-        <button
-          onClick={startSimulation}
-          disabled={running || selectedEras.length < 2}
-          className="se-focusable rounded-[var(--se-radius-md)] border border-[var(--se-primary)] text-[var(--se-primary)] px-4 py-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[var(--se-glow)] transition-colors"
-        >
-          {running ? "Running…" : "Run identical workload"}
-        </button>
-        <button
-          onClick={resetSimulation}
-          className="se-focusable rounded-[var(--se-radius-md)] border border-[var(--se-border)] text-[var(--se-muted)] px-4 py-2 text-sm hover:text-[var(--se-text)]"
-        >
-          ↺ Reset
-        </button>
-      </div>
-
-      {/* Simulation panels: side by side on desktop, stacked on mobile */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 lg:auto-cols-fr lg:grid-flow-col">
-        {selectedEras.map((era) => {
-          const chip = flagship(era);
-          const pct = progress[era.id] ?? 0;
-          const done = pct >= 100;
-          return (
-            <div key={era.id} className="se-card rounded-[var(--se-radius-md)] p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: era.accent }} />
-                <span className="font-bold text-sm">{era.name}</span>
-              </div>
-              <div className="se-mono text-xs text-[var(--se-muted)] mb-2">{chip.name}</div>
-
-              <div className="h-3 rounded-full bg-[var(--se-bg)] border border-[var(--se-border)] overflow-hidden">
-                <motion.div
-                  className="h-full rounded-full"
-                  style={{ background: era.accent }}
-                  animate={{ width: `${pct}%` }}
-                  transition={{ ease: "linear", duration: 0.05 }}
-                />
-              </div>
-              <div className="se-mono text-xs mt-2 flex justify-between">
-                <span className="text-[var(--se-muted)]">
-                  {done ? "Task complete" : `${Math.round(pct)}%`}
-                </span>
-                {done && finishedAt[era.id] && (
-                  <span className="text-[var(--se-primary)]">
-                    {(finishedAt[era.id] / 1000).toFixed(2)}s
-                  </span>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Era Highlights (collapsible on mobile) */}
-      <div className="mt-6">
-        <button
-          className="se-focusable sm:pointer-events-none flex w-full items-center justify-between text-left sm:cursor-default"
-          onClick={() => setExpanded((s) => ({ ...s, highlights: !s.highlights }))}
-        >
-          <h4 className="font-bold text-[var(--se-primary)]">Era Highlights</h4>
-          <span className="se-mono text-xs text-[var(--se-muted)] sm:hidden">
-            {expanded.highlights ? "▲" : "▼"}
-          </span>
-        </button>
-        <AnimatePresence initial={false}>
-          {(expanded.highlights || true) && (
-            <motion.div
-              className="grid gap-3 sm:grid-cols-2 mt-3 overflow-hidden sm:!h-auto sm:!opacity-100"
-              initial={false}
-              animate={{ height: expanded.highlights ? "auto" : 0, opacity: expanded.highlights ? 1 : 0 }}
-            >
-              {selectedEras.map((era) => {
-                const chip = flagship(era);
-                return (
-                  <div key={era.id} className="se-card rounded-[var(--se-radius-md)] p-3 text-sm">
-                    <div className="font-bold mb-1">{chip.name}</div>
-                    <div className="se-mono text-xs text-[var(--se-muted)]">
-                      {chip.cores} cores · {chip.clockGHz} GHz · {chip.process}
-                    </div>
-                    <p className="text-xs text-[var(--se-muted)] mt-1">{chip.notable}</p>
-                  </div>
-                );
-              })}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Performance Metrics + feedback (collapsible on mobile) */}
-      <div className="mt-6">
-        <button
-          className="se-focusable sm:pointer-events-none flex w-full items-center justify-between text-left sm:cursor-default"
-          onClick={() => setExpanded((s) => ({ ...s, metrics: !s.metrics }))}
-        >
-          <h4 className="font-bold text-[var(--se-primary)]">Performance Metrics</h4>
-          <span className="se-mono text-xs text-[var(--se-muted)] sm:hidden">
-            {expanded.metrics ? "▲" : "▼"}
-          </span>
-        </button>
-        {expanded.metrics && (
-          <div className="overflow-x-auto mt-3">
-            <table className="se-mono w-full text-xs border-collapse">
-              <thead>
-                <tr className="text-[var(--se-muted)] text-left border-b border-[var(--se-border)]">
-                  <th className="py-2 pr-3">Era</th>
-                  <th className="py-2 pr-3">Time to complete</th>
-                  <th className="py-2 pr-3">Relative speed</th>
-                </tr>
-              </thead>
-              <tbody>
-                {selectedEras.map((era) => {
-                  const chip = flagship(era);
-                  const time = finishedAt[era.id];
-                  return (
-                    <tr key={era.id} className="border-b border-[var(--se-border)]">
-                      <td className="py-2 pr-3">{era.name}</td>
-                      <td className="py-2 pr-3 text-[var(--se-primary)]">
-                        {time ? `${(time / 1000).toFixed(2)}s` : "—"}
-                      </td>
-                      <td className="py-2 pr-3">{chip.perfIndex}×</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            {Object.keys(finishedAt).length === selectedEras.length && selectedEras.length > 0 && (
-              <p className="text-xs text-[var(--se-muted)] mt-3">
-                On this workload, the newest selected era finished roughly{" "}
-                <span className="text-[var(--se-primary)]">
-                  {(
-                    Math.max(...selectedEras.map((e) => flagship(e).perfIndex)) /
-                    Math.min(...selectedEras.map((e) => flagship(e).perfIndex))
-                  ).toFixed(1)}
-                  ×
-                </span>{" "}
-                faster than the oldest — a stand-in for decades of architectural improvement, not a
-                literal benchmark score.
-              </p>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+  // ---------- Era 5: The AI & Efficiency Era (2021–present) ----------
+  {
+    era: "The AI & Efficiency Era",
+    question: "What dedicated block enables on-device AI processing in modern mobile chips?",
+    choices: ["NPU (Neural Processing Unit)", "ISP", "DSP", "Modem"],
+    correct: 0,
+    explanation: "The NPU (Neural Processing Unit) is the dedicated block that enables on-device AI in this era.",
+  },
+  {
+    era: "The AI & Efficiency Era",
+    question: "What manufacturing process nodes are pushing performance-per-watt higher in this era?",
+    choices: ["28nm/22nm", "14nm/10nm", "3nm/4nm", "90nm/65nm"],
+    correct: 2,
+    explanation: "TSMC's 3nm/4nm process nodes are driving major gains in performance-per-watt in this era.",
+  },
+  {
+    era: "The AI & Efficiency Era",
+    question: "Which Apple chip represents this era?",
+    choices: ["Apple A9", "Apple A17 Pro", "Apple A6", "Apple A4"],
+    correct: 1,
+    explanation: "The Apple A17 Pro is one of the flagship chips of the AI & Efficiency era.",
+  },
+  {
+    era: "The AI & Efficiency Era",
+    question: "Which Qualcomm chip represents this era?",
+    choices: ["Snapdragon 8 Gen 3", "Snapdragon 820", "Snapdragon 600", "Snapdragon S1"],
+    correct: 0,
+    explanation: "The Snapdragon 8 Gen 3 is a flagship chip of the AI & Efficiency era.",
+  },
+  {
+    era: "The AI & Efficiency Era",
+    question: "Which MediaTek chip represents this era?",
+    choices: ["Dimensity 9300", "Helio X20", "Dimensity 700", "MT6580"],
+    correct: 0,
+    explanation: "The MediaTek Dimensity 9300 is a flagship chip representing this era.",
+  },
+  {
+    era: "The AI & Efficiency Era",
+    question: "What metric has improved the most thanks to smaller nodes and dedicated AI hardware?",
+    choices: ["Performance-per-watt", "Screen resolution", "Physical chip size only", "Number of ports"],
+    correct: 0,
+    explanation: "Performance-per-watt is the key metric that has advanced sharply thanks to smaller nodes and NPUs.",
+  },
+];

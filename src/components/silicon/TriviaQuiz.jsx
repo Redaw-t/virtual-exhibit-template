@@ -1,173 +1,209 @@
-
-
+// src/components/TriviaQuiz.jsx
+// Interactive Trivia Quiz — Mobile Microprocessor Evolution
+//
+// Usage in an .mdx page:
+//   import TriviaQuiz from '../components/TriviaQuiz.jsx';
+//   <TriviaQuiz client:load />
+//
 import { useMemo, useState } from "react";
-import { eras } from "./eraData.js";
-import { questionBank } from "./questionBank.js";
+import { QUESTIONS, ERAS } from "../../data/quizQuestions.js";
 
-const SESSION_SIZE = 15;
+const QUESTIONS_PER_SESSION = 15;
 const MIN_PER_ERA = 3;
 
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
+function shuffle(array) {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+    [copy[i], copy[j]] = [copy[j], copy[i]];
   }
-  return a;
+  return copy;
 }
 
-// Build one quiz session: guarantee MIN_PER_ERA per era, then fill the rest
-// randomly from whatever's left, and shuffle each question's answer options.
+// Build a 15-question session: at least 3 per era, rest filled randomly,
+// and randomize the order of answer choices for each question.
 function buildSession() {
-  const byEra = Object.fromEntries(eras.map((e) => [e.id, shuffle(questionBank.filter((q) => q.eraId === e.id))]));
+  const byEra = ERAS.map((era) => shuffle(QUESTIONS.filter((q) => q.era === era)));
 
-  const guaranteed = eras.flatMap((e) => byEra[e.id].slice(0, MIN_PER_ERA));
-  const remainingPool = shuffle(eras.flatMap((e) => byEra[e.id].slice(MIN_PER_ERA)));
-  const fillCount = Math.max(0, SESSION_SIZE - guaranteed.length);
+  const guaranteed = byEra.flatMap((qs) => qs.slice(0, MIN_PER_ERA));
+  const remainingPool = shuffle(byEra.flatMap((qs) => qs.slice(MIN_PER_ERA)));
+  const fillCount = QUESTIONS_PER_SESSION - guaranteed.length;
   const session = shuffle([...guaranteed, ...remainingPool.slice(0, fillCount)]);
 
-  return session.map((q) => ({ ...q, options: shuffle(q.options) }));
+  return session.map((q) => {
+    const order = shuffle(q.choices.map((text, idx) => ({ text, idx })));
+    return {
+      ...q,
+      options: order.map((o) => o.text),
+      correctOption: order.findIndex((o) => o.idx === q.correct),
+    };
+  });
 }
 
 export default function TriviaQuiz() {
   const [session, setSession] = useState(() => buildSession());
-  const [index, setIndex] = useState(0);
-  const [picked, setPicked] = useState(null);
-  const [answers, setAnswers] = useState([]); // { q, pickedId, correct }
-  const done = index >= session.length;
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [answers, setAnswers] = useState([]); // { era, correct }
+  const [finished, setFinished] = useState(false);
 
-  const eraName = (id) => eras.find((e) => e.id === id)?.name ?? id;
+  const question = session[current];
+  const progressPct = Math.round((current / session.length) * 100);
+
+  function handleSelect(optionIndex) {
+    if (selected !== null) return; // lock after first answer
+    const isCorrect = optionIndex === question.correctOption;
+    setSelected(optionIndex);
+    setAnswers((prev) => [...prev, { era: question.era, correct: isCorrect }]);
+  }
+
+  function handleNext() {
+    if (current + 1 >= session.length) {
+      setFinished(true);
+      return;
+    }
+    setCurrent((c) => c + 1);
+    setSelected(null);
+  }
+
+  function handleRestart() {
+    setSession(buildSession());
+    setCurrent(0);
+    setSelected(null);
+    setAnswers([]);
+    setFinished(false);
+  }
 
   const scoreByEra = useMemo(() => {
-    const tally = Object.fromEntries(eras.map((e) => [e.id, { correct: 0, total: 0 }]));
-    answers.forEach((a) => {
-      tally[a.q.eraId].total += 1;
-      if (a.correct) tally[a.q.eraId].correct += 1;
+    const map = Object.fromEntries(ERAS.map((era) => [era, { correct: 0, total: 0 }]));
+    answers.forEach(({ era, correct }) => {
+      map[era].total += 1;
+      if (correct) map[era].correct += 1;
     });
-    return tally;
+    return map;
   }, [answers]);
 
-  function choose(optionId) {
-    if (picked) return; // lock in after first pick
-    setPicked(optionId);
-  }
+  const totalCorrect = answers.filter((a) => a.correct).length;
 
-  function next() {
-    const q = session[index];
-    setAnswers((prev) => [...prev, { q, pickedId: picked, correct: picked === q.correct }]);
-    setPicked(null);
-    setIndex((i) => i + 1);
-  }
+  if (finished) {
+    return (
+      <div
+        role="region"
+        aria-label="Trivia quiz results"
+        className="mx-auto w-full max-w-2xl rounded-2xl border border-white/10 bg-[#141420] p-6 sm:p-8 font-[Inter]"
+      >
+        <h3 className="font-[Space_Grotesk] text-2xl font-bold text-[#F0F0F5]">
+          Session Complete
+        </h3>
+        <p className="mt-1 font-mono text-sm text-[#8888A0]">
+          You scored {totalCorrect} / {session.length}
+        </p>
 
-  function restart() {
-    setSession(buildSession());
-    setIndex(0);
-    setPicked(null);
-    setAnswers([]);
-  }
+        <div className="mt-6 space-y-3">
+          {ERAS.map((era) => {
+            const s = scoreByEra[era];
+            const pct = s.total ? Math.round((s.correct / s.total) * 100) : 0;
+            return (
+              <div key={era} className="rounded-lg border border-white/10 bg-[#0A0A0F] p-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-[#F0F0F5]">{era}</span>
+                  <span className="font-mono text-xs text-[#00E5FF]">
+                    {s.correct}/{s.total}
+                  </span>
+                </div>
+                <div className="mt-2 h-1.5 w-full rounded-full bg-white/10">
+                  <div
+                    className="h-1.5 rounded-full bg-[#00E5FF] transition-[width] duration-300 motion-reduce:transition-none"
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
 
-  const totalCorrect = answers.filter((a) => a.correct).length + (picked === session[index]?.correct ? 0 : 0);
+        <button
+          onClick={handleRestart}
+          className="mt-6 w-full rounded-md border border-[#00E5FF]/40 bg-transparent px-4 py-3 font-medium text-[#00E5FF] transition-transform duration-150 hover:scale-[1.02] hover:shadow-[0_0_0_1px_rgba(0,229,255,0.4)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00E5FF] motion-reduce:transition-none motion-reduce:hover:scale-100"
+        >
+          Retake Quiz
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="silicon-exhibit not-prose">
-      {!done && session[index] && (
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <span className="se-mono text-xs text-[var(--se-muted)]">
-              Question {index + 1} of {session.length}
-            </span>
-            <span
-              className="se-pill px-2 py-1 border border-[var(--se-border)] text-[var(--se-primary)]"
+    <div
+      role="region"
+      aria-label={`Trivia question ${current + 1} of ${session.length}, era: ${question.era}`}
+      className="mx-auto w-full max-w-2xl rounded-2xl border border-white/10 bg-[#141420] p-6 sm:p-8 font-[Inter]"
+    >
+      {/* Progress + era tag */}
+      <div className="mb-4 flex items-center justify-between">
+        <span className="rounded-sm border border-[#7B61FF]/40 bg-[#7B61FF]/10 px-2 py-1 font-mono text-xs tracking-wide text-[#7B61FF]">
+          {question.era}
+        </span>
+        <span className="font-mono text-xs text-[#8888A0]">
+          {current + 1} / {session.length}
+        </span>
+      </div>
+      <div className="mb-6 h-1.5 w-full rounded-full bg-white/10">
+        <div
+          className="h-1.5 rounded-full bg-[#00E5FF] transition-[width] duration-300 motion-reduce:transition-none"
+          style={{ width: `${progressPct}%` }}
+        />
+      </div>
+
+      {/* Question */}
+      <h3 className="font-[Space_Grotesk] text-lg font-medium leading-snug text-[#F0F0F5]">
+        {question.question}
+      </h3>
+
+      {/* Options */}
+      <div className="mt-5 flex flex-col gap-3">
+        {question.options.map((opt, i) => {
+          const isSelected = selected === i;
+          const isCorrectOpt = i === question.correctOption;
+          const showState = selected !== null;
+
+          let stateClasses = "border-white/10 hover:border-[#00E5FF]/60";
+          if (showState && isCorrectOpt) {
+            stateClasses = "border-[#00E5FF] shadow-[0_0_0_1px_rgba(0,229,255,0.4)]";
+          } else if (showState && isSelected && !isCorrectOpt) {
+            stateClasses = "border-red-400 shadow-[0_0_0_1px_rgba(248,113,113,0.4)]";
+          }
+
+          return (
+            <button
+              key={i}
+              onClick={() => handleSelect(i)}
+              disabled={showState}
+              aria-pressed={isSelected}
+              className={`min-h-[48px] rounded-md border bg-[#0A0A0F] px-4 py-3 text-left text-sm text-[#F0F0F5] transition-transform duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00E5FF] motion-reduce:transition-none ${stateClasses} ${
+                !showState ? "hover:scale-[1.02]" : ""
+              }`}
             >
-              {eraName(session[index].eraId)}
-            </span>
-          </div>
+              {opt}
+            </button>
+          );
+        })}
+      </div>
 
-          <h4 className="text-lg font-bold mb-4">{session[index].text}</h4>
-
-          <div className="grid gap-2 sm:grid-cols-2 mb-4">
-            {session[index].options.map((opt) => {
-              const isPicked = picked === opt.id;
-              const isCorrectOpt = opt.id === session[index].correct;
-              const showState = picked !== null;
-              let borderColor = "var(--se-border)";
-              if (showState && isCorrectOpt) borderColor = "var(--se-success)";
-              else if (showState && isPicked && !isCorrectOpt) borderColor = "var(--se-danger)";
-              else if (isPicked) borderColor = "var(--se-primary)";
-
-              return (
-                <button
-                  key={opt.id}
-                  onClick={() => choose(opt.id)}
-                  disabled={picked !== null}
-                  className="se-card se-focusable text-left p-3 rounded-[var(--se-radius-md)] text-sm disabled:cursor-default"
-                  style={{ borderColor }}
-                >
-                  {opt.label}
-                </button>
-              );
-            })}
-          </div>
-
-          {picked && picked !== session[index].correct && (
-            <p className="text-sm text-[var(--se-muted)] mb-4 border-l-2 pl-3" style={{ borderColor: "var(--se-danger)" }}>
-              {session[index].explain}
-            </p>
-          )}
-          {picked && picked === session[index].correct && (
-            <p className="text-sm mb-4 border-l-2 pl-3" style={{ borderColor: "var(--se-success)", color: "var(--se-success)" }}>
-              Correct!
-            </p>
-          )}
-
-          <button
-            onClick={next}
-            disabled={!picked}
-            className="se-focusable rounded-[var(--se-radius-md)] border border-[var(--se-primary)] text-[var(--se-primary)] px-4 py-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {index === session.length - 1 ? "See results →" : "Next →"}
-          </button>
-        </div>
+      {/* Explanation on wrong answer */}
+      {selected !== null && selected !== question.correctOption && (
+        <p className="mt-4 rounded-md border border-red-400/30 bg-red-400/5 p-3 font-mono text-xs leading-relaxed text-[#F0F0F5]">
+          {question.explanation}
+        </p>
       )}
 
-      {done && (
-        <div>
-          <h4 className="text-lg font-bold mb-1">
-            You scored {answers.filter((a) => a.correct).length} / {session.length}
-          </h4>
-          <p className="text-sm text-[var(--se-muted)] mb-4">Here's your breakdown by era:</p>
-
-          <div className="grid gap-2 mb-5">
-            {eras.map((era) => {
-              const s = scoreByEra[era.id];
-              if (!s.total) return null;
-              const pct = Math.round((s.correct / s.total) * 100);
-              return (
-                <div key={era.id} className="se-card rounded-[var(--se-radius-md)] p-3">
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>{era.name}</span>
-                    <span className="se-mono text-[var(--se-primary)]">
-                      {s.correct}/{s.total}
-                    </span>
-                  </div>
-                  <div className="h-1.5 rounded-full bg-[var(--se-bg)] border border-[var(--se-border)] overflow-hidden">
-                    <div
-                      className="h-full rounded-full"
-                      style={{ width: `${pct}%`, background: era.accent }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <button
-            onClick={restart}
-            className="se-focusable rounded-[var(--se-radius-md)] border border-[var(--se-primary)] text-[var(--se-primary)] px-4 py-2 text-sm"
-          >
-            ↺ Retake quiz
-          </button>
-        </div>
+      {/* Next button */}
+      {selected !== null && (
+        <button
+          onClick={handleNext}
+          className="mt-6 w-full rounded-md bg-[#00E5FF] px-4 py-3 font-medium text-[#0A0A0F] transition-transform duration-150 hover:scale-[1.02] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00E5FF] motion-reduce:transition-none motion-reduce:hover:scale-100"
+        >
+          {current + 1 >= session.length ? "See Results" : "Next Question"}
+        </button>
       )}
     </div>
   );
