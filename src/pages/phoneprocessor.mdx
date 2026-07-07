@@ -8,6 +8,7 @@ readingTime: "15 minutes"
 
 import '../styles/tokens.css';
 import InfoCard from '../components/InfoCard.astro';
+import TriviaQuiz from '../components/silicon/TriviaQuiz.jsx';
 
 <div class="exhibit-page">
 
@@ -133,9 +134,7 @@ On-device AI now powers real-time photo enhancement, live language translation, 
 
 ## Test Your Knowledge
 
-{/* TODO: Insert Mobile Microprocessor Trivia Quiz component here */}
-{/* import TriviaQuiz from '../components/TriviaQuiz.jsx'; */}
-{/* <TriviaQuiz client:visible /> */}
+<TriviaQuiz client:load />
 
 ## Compare the Eras
 
