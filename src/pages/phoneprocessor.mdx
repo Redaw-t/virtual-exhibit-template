@@ -18,9 +18,9 @@ import TriviaQuiz from '../components/silicon/TriviaQuiz.jsx';
 
 # Silicon Minds: The Evolution of the Mobile Microprocessor
 
-The mobile microprocessor is one of the most consequential inventions in the history of computing. What began as a modest, low-power adaptation of desktop processor design has grown into a highly integrated system-on-chip that fits in the palm of a hand yet rivals the performance of a laptop. This exhibit walks through five eras of that transformation, each one born from a limitation that engineers refused to accept, and each one leaving a permanent mark on how mobile devices look, feel, and perform today.
+The chip inside your phone has a strange origin story. It started out as a stripped-down take on a desktop processor, something engineers built mostly to save power, and over about thirty years it grew into a full system-on-chip that fits under your thumb and can hold its own against a laptop. This exhibit follows that change across five eras.
 
-As you move through the exhibit, notice the pattern that repeats in every era: a real-world constraint (battery life, heat, size, cost) collides with rising consumer expectations, and that collision is what forces the architectural breakthrough. Nothing here evolved for its own sake. Every transistor added had to earn its place.
+One thing worth watching as you go: the same situation keeps coming back. A hard physical limit like battery life, heat, size, or cost runs into what people suddenly expect their phones to do, and that clash is usually what forces the next big design change. None of this happened just because it could. Every part that got added had to justify the space it took up.
 
 {/* TODO: Insert Microprocessor Timeline Explorer component here (central interactive feature) */}
 {/* import TimelineExplorer from '../components/TimelineExplorer.jsx'; */}
@@ -32,19 +32,19 @@ As you move through the exhibit, notice the pattern that repeats in every era: a
    ERA 1: THE BIRTH OF MOBILE CPUs
    ============================================================ */}
 
-## Era 1 — The Birth of Mobile CPUs
+## Era 1: The Birth of Mobile CPUs
 **Mid-1990s to Early 2000s**
 
-<InfoCard title="Key Milestone" body="Early low-power RISC processors adapted for mobile phones — ARM7TDMI, Intel StrongARM, Motorola DragonBall." />
+<InfoCard title="Key Milestone" body="Early low-power RISC processors adapted for mobile phones: ARM7TDMI, Intel StrongARM, Motorola DragonBall." />
 
 ### The Limitation
-In the early 1990s, mobile phones were communication devices first and computers a distant second. The processors inside them were repurposed embedded controllers, never designed with battery-powered, handheld use in mind. Desktop-class CPUs of the era drew far too much power and generated far too much heat to survive inside a device meant to sit in a shirt pocket. If mobile phones were ever going to do more than place calls, the industry needed a processor built from the ground up around a single, non-negotiable constraint: power efficiency.
+Back in the early 1990s, a mobile phone was a phone. Computing was an afterthought. The processors inside were basically repurposed embedded controllers, and nobody had designed them with a battery-powered device in your pocket in mind. The desktop CPUs of the day were out of the question, since they pulled too much power and ran too hot to survive in something the size of a shirt pocket. For phones to ever do more than make calls, the industry needed a chip built around one rule it could not break: sip power, don't guzzle it.
 
 ### The Breakthrough
-The answer came from RISC (Reduced Instruction Set Computer) design philosophy, which favored simple, fast instructions over the complex ones used in desktop chips. ARM's 7TDMI core became the quiet workhorse of this era, prized for its small die size and minimal power draw. Intel's StrongARM and Motorola's DragonBall followed similar principles, proving that a phone processor didn't need raw power — it needed *efficient* power. These chips clocked in at just a few megahertz to a few dozen megahertz, a fraction of their desktop cousins, but that was precisely the point.
+The fix came from RISC, short for Reduced Instruction Set Computer. The idea was to lean on simple, fast instructions instead of the heavier, more complex ones desktop chips relied on. ARM's 7TDMI core ended up doing a lot of the quiet heavy lifting here, mostly because it was tiny and barely touched the battery. Intel's StrongARM and Motorola's DragonBall took the same route. Together they proved a point that sounds obvious now but wasn't then: a phone chip didn't need to be powerful, it needed to be efficient. These ran at a few megahertz up to a few dozen, nothing next to a desktop, and that was exactly the point.
 
 ### The Ripple Effect
-This era set the philosophical foundation for everything that followed. "Performance per watt" became the guiding metric of mobile computing, a principle that still governs chip design today. It also enabled the first generation of feature phones capable of simple gaming, basic scheduling, and rudimentary text-based applications — modest by today's standards, but revolutionary at the time.
+This is where the mindset for everything that followed got set. "Performance per watt" became the number that mattered in mobile, and it still is. It also gave us the first feature phones that could do a little more than call and text, things like simple games, a basic calendar, and rough text-based apps. Tame by today's standards, but a real jump at the time.
 
 ---
 
@@ -52,19 +52,19 @@ This era set the philosophical foundation for everything that followed. "Perform
    ERA 2: THE ARM REVOLUTION
    ============================================================ */}
 
-## Era 2 — The ARM Revolution
-**2007–2012**
+## Era 2: The ARM Revolution
+**2007 to 2012**
 
-<InfoCard title="Key Milestone" body="ARM architecture dominates smartphones; dedicated ISPs and DSPs emerge — ARM Cortex-A8, Apple A4, Qualcomm Snapdragon S1." />
+<InfoCard title="Key Milestone" body="ARM architecture dominates smartphones; dedicated ISPs and DSPs emerge: ARM Cortex-A8, Apple A4, Qualcomm Snapdragon S1." />
 
 ### The Limitation
-The launch of the smartphone changed the equation entirely. Touchscreens, full web browsers, cameras, and app ecosystems demanded processors that could handle rich graphical interfaces and multiple simultaneous background tasks — workloads the earlier generation of chips was never built to carry. Manufacturers needed a processor architecture that could scale up in capability without abandoning the power discipline the first era had established.
+The smartphone rewrote the whole problem. Suddenly a phone had a touchscreen, a real web browser, a camera, and an app store, and it was expected to juggle several things at once. The chips from the previous era were never built for that kind of load. What manufacturers needed was an architecture that could get a lot more capable without throwing out the power discipline the first era had drilled in.
 
 ### The Breakthrough
-ARM's Cortex-A8 core delivered a superscalar, higher-clocked design while still honoring ARM's efficiency-first DNA, and it quickly became the architectural backbone licensed across the industry. Apple's A4 and Qualcomm's Snapdragon S1 built on this foundation, and — critically — began pairing the CPU with dedicated silicon: image signal processors (ISPs) to handle camera data and digital signal processors (DSPs) to offload audio and radio processing. This was the first real step toward treating the mobile chip as a *system*, not just a single core doing all the work.
+ARM's Cortex-A8 answered that. It was a faster, superscalar design that still stuck to ARM's efficiency-first habits, and it quickly became the core everyone licensed. Apple's A4 and Qualcomm's Snapdragon S1 built on it, and this is the part that mattered: they started bolting dedicated silicon onto the main CPU. Image signal processors (ISPs) took over camera data, and digital signal processors (DSPs) handled audio and radio. That was the first real sign that a phone chip was becoming a system rather than a single core trying to do everything.
 
 ### The Ripple Effect
-By offloading specialized tasks to dedicated hardware, phones could run smoother touch interfaces, capture noticeably better photos, and support the always-on app model that defined the modern smartphone. This era is when "mobile processor" stopped meaning "small desktop chip" and started meaning something architecturally distinct — a divergence that would only deepen in the eras to come.
+Handing those specialized jobs to purpose-built hardware paid off fast. Touch interfaces felt smoother, photos looked noticeably better, and phones could keep apps alive in the background the way we now take for granted. This is also the point where "mobile processor" stopped meaning "a small desktop chip" and started meaning its own thing, a split that only widened from here.
 
 ---
 
@@ -72,19 +72,19 @@ By offloading specialized tasks to dedicated hardware, phones could run smoother
    ERA 3: THE MULTICORE ERA
    ============================================================ */}
 
-## Era 3 — The Multicore Era
-**2011–2014**
+## Era 3: The Multicore Era
+**2011 to 2014**
 
-<InfoCard title="Key Milestone" body="Dual- and quad-core mobile CPUs arrive, boosting multitasking and app performance — NVIDIA Tegra 2, Apple A6, Qualcomm Snapdragon 600." />
+<InfoCard title="Key Milestone" body="Dual- and quad-core mobile CPUs arrive, boosting multitasking and app performance: NVIDIA Tegra 2, Apple A6, Qualcomm Snapdragon 600." />
 
 ### The Limitation
-As app ecosystems matured, users expected to switch fluidly between a music player, a messaging app, and a browser without stutter or delay. Pushing a single core to ever-higher clock speeds to keep up ran straight into a wall: higher clocks meant disproportionately higher power draw and heat, both fatal for a battery-powered handheld. Raw frequency scaling had reached its practical ceiling.
+As apps piled up, people expected to bounce between a music player, a chat app, and a browser without anything stuttering. The obvious move, cranking a single core to higher and higher clock speeds, hit a wall fast. Every bump in clock speed cost far more in power and heat, and on a battery-powered phone that's a dealbreaker. Chasing raw frequency had basically run out of road.
 
 ### The Breakthrough
-The industry's answer was to go wide instead of fast. NVIDIA's Tegra 2 introduced dual-core mobile processing, and manufacturers quickly followed with quad-core designs like those found in the Qualcomm Snapdragon 600 line. Apple's A6 took a slightly different path, using a smaller number of custom-designed cores tuned for efficiency rather than chasing core count for its own sake. Regardless of the exact approach, the shared insight was the same: multiple modest cores running in parallel could outperform one core running hot, while staying within a sustainable power budget.
+So the industry went wide instead of fast. NVIDIA's Tegra 2 brought dual-core to phones, and quad-core designs like the Snapdragon 600 followed soon after. Apple's A6 took a slightly different line, using fewer custom cores tuned for efficiency rather than piling on core count for a spec sheet. The underlying insight was the same either way: a handful of modest cores working in parallel could beat one core running hot, and stay inside a power budget a phone could actually live with.
 
 ### The Ripple Effect
-True multitasking became a reality on mobile devices for the first time. Background processes, real-time notifications, and split-second app switching all became smooth rather than janky. This era also planted the seed for the heterogeneous, multi-core designs that would define mobile chips permanently from this point forward.
+Real multitasking showed up on phones for the first time. Background tasks, live notifications, and quick app switching went from janky to smooth. It also set up the multi-core, mixed-core designs that have defined mobile chips ever since.
 
 ---
 
@@ -92,19 +92,19 @@ True multitasking became a reality on mobile devices for the first time. Backgro
    ERA 4: THE SYSTEM-ON-CHIP ERA
    ============================================================ */}
 
-## Era 4 — The System-on-Chip Era
-**2015–2020**
+## Era 4: The System-on-Chip Era
+**2015 to 2020**
 
-<InfoCard title="Key Milestone" body="Highly integrated SoCs combine CPU, GPU, modem, and memory on a single die; big.LITTLE heterogeneous cores improve efficiency — Apple A9, Qualcomm Snapdragon 820, Samsung Exynos 8890." />
+<InfoCard title="Key Milestone" body="Highly integrated SoCs combine CPU, GPU, modem, and memory on a single die; big.LITTLE heterogeneous cores improve efficiency: Apple A9, Qualcomm Snapdragon 820, Samsung Exynos 8890." />
 
 ### The Limitation
-More cores solved the multitasking problem, but a new one emerged: not every task needs the same amount of power. Checking a notification and rendering a 3D game are wildly different workloads, yet earlier chips treated every core identically. Running a full-power core for a lightweight task wasted battery life the industry could no longer afford to waste, especially as screens grew larger and app demands grew heavier.
+More cores fixed multitasking but opened a new gap: not every job needs the same muscle. Glancing at a notification and rendering a 3D game are worlds apart, yet earlier chips treated every core the same. Spinning up a full-power core for something trivial burned battery the industry could no longer spare, especially as screens got bigger and apps got hungrier.
 
 ### The Breakthrough
-big.LITTLE heterogeneous computing solved this by pairing high-performance "big" cores with power-sipping "LITTLE" cores on the same chip, dynamically routing tasks to whichever core fit the job. At the same time, chipmakers began integrating the CPU, GPU, cellular modem, and memory controller onto a single die — the true System-on-Chip. The Apple A9, Qualcomm Snapdragon 820, and Samsung Exynos 8890 all reflect this shift toward extreme integration, shrinking the physical footprint of the phone's brain while multiplying what it could do.
+big.LITTLE fixed this by putting two kinds of cores on the same chip: strong "big" cores for heavy work and frugal "LITTLE" cores for the light stuff, with the system shuffling each task to whichever core suited it. Around the same time, chipmakers pulled the CPU, GPU, cellular modem, and memory controller onto a single die, the true system-on-chip. The Apple A9, Snapdragon 820, and Samsung Exynos 8890 all show this push toward tight integration, shrinking the phone's brain while stretching what it could do.
 
 ### The Ripple Effect
-Integration meant thinner phones, longer battery life under mixed everyday use, and a leap in graphical performance that made mobile gaming and high-resolution video genuinely competitive with dedicated devices. It also meant chip design became far more about intelligent task management than raw horsepower — a mindset shift that carries directly into the next and current era.
+That integration meant thinner phones, longer battery life across a normal mixed day, and a graphics jump that put mobile gaming and high-res video genuinely in the same conversation as dedicated devices. It also shifted chip design toward smart task management over brute force, and that mindset runs straight into where we are now.
 
 ---
 
@@ -112,19 +112,19 @@ Integration meant thinner phones, longer battery life under mixed everyday use, 
    ERA 5: THE AI & EFFICIENCY ERA
    ============================================================ */}
 
-## Era 5 — The AI & Efficiency Era
-**2021–Present**
+## Era 5: The AI & Efficiency Era
+**2021 to Present**
 
-<InfoCard title="Key Milestone" body="Dedicated NPUs enable on-device AI; TSMC 3nm/4nm nodes push performance-per-watt further — Apple A17 Pro, Qualcomm Snapdragon 8 Gen 3, MediaTek Dimensity 9300." />
+<InfoCard title="Key Milestone" body="Dedicated NPUs enable on-device AI; TSMC 3nm and 4nm nodes push performance-per-watt further: Apple A17 Pro, Qualcomm Snapdragon 8 Gen 3, MediaTek Dimensity 9300." />
 
 ### The Limitation
-Voice assistants, computational photography, real-time translation, and on-device machine learning all demanded a kind of computation that traditional CPU and GPU cores handled inefficiently: massive numbers of small, parallel matrix operations. Running these workloads on general-purpose cores burned through battery life quickly, and sending the data to the cloud for processing introduced latency and raised serious privacy concerns.
+Voice assistants, computational photography, live translation, and on-device machine learning all lean on the same kind of math, huge batches of small parallel matrix operations, and that's exactly the kind of work regular CPU and GPU cores handle poorly. Running it on general-purpose cores drained the battery, and shipping the data off to the cloud instead added lag and raised real privacy questions.
 
 ### The Breakthrough
-Chipmakers responded by adding a fourth major processing block to the SoC: the Neural Processing Unit (NPU), purpose-built for AI inference directly on the device. Combined with increasingly advanced manufacturing processes — TSMC's 3-nanometer and 4-nanometer nodes — chips like the Apple A17 Pro, Qualcomm Snapdragon 8 Gen 3, and MediaTek Dimensity 9300 pushed performance-per-watt to levels the earliest mobile engineers could scarcely have imagined.
+The answer was to add a fourth major block to the SoC: the Neural Processing Unit, or NPU, built specifically to run AI on the device itself. Pair that with newer manufacturing, TSMC's 3-nanometer and 4-nanometer nodes, and chips like the Apple A17 Pro, Snapdragon 8 Gen 3, and MediaTek Dimensity 9300 reach a performance-per-watt the engineers back in the ARM7TDMI days could barely have pictured.
 
 ### The Ripple Effect
-On-device AI now powers real-time photo enhancement, live language translation, and predictive battery management, all without a round trip to the cloud. This era represents the natural culmination of every constraint that came before it: the same power-efficiency obsession that shaped the ARM7TDMI in the 1990s is what makes it possible for a phone today to run sophisticated AI models locally, instantly, and privately.
+On-device AI now handles real-time photo touch-ups, live translation, and smarter battery management, all without ever leaving the phone. In a way this era is the payoff for every constraint before it. The same obsession with power efficiency that shaped the ARM7TDMI in the 1990s is the reason a phone today can run heavy AI models locally, right away, and privately.
 
 ---
 
@@ -141,5 +141,29 @@ On-device AI now powers real-time photo enhancement, live language translation, 
 {/* TODO: Insert Mobile Processor Evolution Simulator component here */}
 {/* import EvolutionSimulator from '../components/EvolutionSimulator.jsx'; */}
 {/* <EvolutionSimulator client:visible /> */}
+
+---
+
+{/* ============================================================
+   REFERENCES (APA 7th edition)
+   ============================================================ */}
+
+## References
+
+Apple A17. (2026). In *Wikipedia*. Retrieved July 7, 2026, from https://en.wikipedia.org/wiki/Apple_A17
+
+Apple introduces the first 3nm smartphone chipset, the A17 Pro, for the iPhone 15 Pro models. (2023, September 12). *PhoneArena*. https://www.phonearena.com/news/a17-pro-chip-announced_id150617
+
+ARM Cortex-A8. (2026). In *Wikipedia*. Retrieved July 7, 2026, from https://en.wikipedia.org/wiki/ARM_Cortex-A8
+
+ARM7. (2026). In *Wikipedia*. Retrieved July 7, 2026, from https://en.wikipedia.org/wiki/ARM7
+
+IBM. (2025). *What is a neural processing unit (NPU)?* https://www.ibm.com/think/topics/neural-processing-unit
+
+International Data Corporation. (2024). *The future of next-gen AI smartphones*. IDC. https://www.idc.com/resource-center/blog/the-future-of-next-gen-ai-smartphones/
+
+Jeff, B. (2012). *Advances in big.LITTLE technology for power and energy savings* [White paper]. ARM.
+
+Kamdar, S., & Kamdar, N. (2015). big.LITTLE architecture: Heterogeneous multicore processing. *International Journal of Computer Applications, 119*(1), 35–38. https://doi.org/10.5120/21034-3106
 
 </div>
