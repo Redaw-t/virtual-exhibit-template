@@ -20,8 +20,6 @@ function shuffle(array) {
   return copy;
 }
 
-// Build a 15-question session: at least 3 per era, rest filled randomly,
-// and randomize the order of answer choices for each question.
 function buildSession() {
   const byEra = ERAS.map((era) => shuffle(QUESTIONS.filter((q) => q.era === era)));
 
@@ -51,7 +49,7 @@ export default function TriviaQuiz() {
   const progressPct = Math.round((current / session.length) * 100);
 
   function handleSelect(optionIndex) {
-    if (selected !== null) return; // lock after first answer
+    if (selected !== null) return;
     const isCorrect = optionIndex === question.correctOption;
     setSelected(optionIndex);
     setAnswers((prev) => [...prev, { era: question.era, correct: isCorrect }]);
@@ -85,18 +83,19 @@ export default function TriviaQuiz() {
 
   const totalCorrect = answers.filter((a) => a.correct).length;
 
+  // --- RESULTS VIEW ---
   if (finished) {
     return (
       <div
         role="region"
         aria-label="Trivia quiz results"
-        className="mx-auto w-full max-w-2xl rounded-2xl border border-white/10 bg-[#141420] p-6 sm:p-8 font-[Inter]"
+        className="mx-auto w-full max-w-2xl rounded-[var(--radius-lg)] border border-[var(--border-color)] bg-[var(--color-surface)] p-6 sm:p-8 font-[var(--font-body)] shadow-[var(--shadow-card)]"
       >
-        <h3 className="font-[Space_Grotesk] text-2xl font-bold text-[#F0F0F5]">
+        <h3 className="font-[var(--font-heading)] text-2xl font-bold text-[var(--color-text-primary)] tracking-tight">
           Session Complete
         </h3>
-        <p className="mt-1 font-mono text-sm text-[#8888A0]">
-          You scored {totalCorrect} / {session.length}
+        <p className="mt-2 font-[var(--font-mono)] text-sm text-[var(--color-text-secondary)]">
+          Final Score: <span className="text-[var(--color-primary)] font-bold">{totalCorrect}</span> / {session.length}
         </p>
 
         <div className="mt-6 space-y-3">
@@ -104,16 +103,16 @@ export default function TriviaQuiz() {
             const s = scoreByEra[era];
             const pct = s.total ? Math.round((s.correct / s.total) * 100) : 0;
             return (
-              <div key={era} className="rounded-lg border border-white/10 bg-[#0A0A0F] p-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-[#F0F0F5]">{era}</span>
-                  <span className="font-mono text-xs text-[#00E5FF]">
-                    {s.correct}/{s.total}
+              <div key={era} className="rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--color-background)] p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-[var(--color-text-primary)]">{era}</span>
+                  <span className="font-[var(--font-mono)] text-xs text-[var(--color-primary)]">
+                    {s.correct} / {s.total} ({pct}%)
                   </span>
                 </div>
-                <div className="mt-2 h-1.5 w-full rounded-full bg-white/10">
+                <div className="h-2 w-full rounded-full bg-white/5 overflow-hidden">
                   <div
-                    className="h-1.5 rounded-full bg-[#00E5FF] transition-[width] duration-300 motion-reduce:transition-none"
+                    className="h-full rounded-full bg-[var(--color-primary)] transition-[width] duration-[var(--duration-standard)] ease-[var(--ease-snappy)] motion-reduce:transition-none"
                     style={{ width: `${pct}%` }}
                   />
                 </div>
@@ -124,7 +123,7 @@ export default function TriviaQuiz() {
 
         <button
           onClick={handleRestart}
-          className="mt-6 w-full rounded-md border border-[#00E5FF]/40 bg-transparent px-4 py-3 font-medium text-[#00E5FF] transition-transform duration-150 hover:scale-[1.02] hover:shadow-[0_0_0_1px_rgba(0,229,255,0.4)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00E5FF] motion-reduce:transition-none motion-reduce:hover:scale-100"
+          className="mt-6 w-full rounded-[var(--radius-md)] border border-[var(--color-primary)]/30 bg-transparent px-4 py-3 font-medium text-[var(--color-primary)] transition-all duration-[var(--duration-fast)] hover:bg-[var(--color-primary)]/5 hover:border-[var(--color-primary)] focus-visible:outline-2 focus-visible:outline-[var(--color-primary)]"
         >
           Retake Quiz
         </button>
@@ -132,45 +131,57 @@ export default function TriviaQuiz() {
     );
   }
 
+  // --- QUIZ GAMEPLAY VIEW ---
   return (
     <div
       role="region"
       aria-label={`Trivia question ${current + 1} of ${session.length}, era: ${question.era}`}
-      className="mx-auto w-full max-w-2xl rounded-2xl border border-white/10 bg-[#141420] p-6 sm:p-8 font-[Inter]"
+      className="mx-auto w-full max-w-2xl rounded-[var(--radius-lg)] border border-[var(--border-color)] bg-[var(--color-surface)] p-6 sm:p-8 font-[var(--font-body)] shadow-[var(--shadow-card)]"
     >
-      {/* Progress + era tag */}
+      {/* Progress + Era Tag Header */}
       <div className="mb-4 flex items-center justify-between">
-        <span className="rounded-sm border border-[#7B61FF]/40 bg-[#7B61FF]/10 px-2 py-1 font-mono text-xs tracking-wide text-[#7B61FF]">
+        <span className="rounded-[var(--radius-sm)] border border-[var(--color-secondary)]/30 bg-[var(--color-secondary)]/10 px-2.5 py-1 font-[var(--font-mono)] text-xs font-medium tracking-wide text-[var(--color-secondary)]">
           {question.era}
         </span>
-        <span className="font-mono text-xs text-[#8888A0]">
-          {current + 1} / {session.length}
+        <span className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)]">
+          Question {current + 1} of {session.length}
         </span>
       </div>
-      <div className="mb-6 h-1.5 w-full rounded-full bg-white/10">
+      
+      {/* Quiz Progress Bar */}
+      <div className="mb-6 h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
         <div
-          className="h-1.5 rounded-full bg-[#00E5FF] transition-[width] duration-300 motion-reduce:transition-none"
+          className="h-full bg-[var(--color-primary)] transition-[width] duration-[var(--duration-standard)] ease-[var(--ease-snappy)] motion-reduce:transition-none"
           style={{ width: `${progressPct}%` }}
         />
       </div>
 
-      {/* Question */}
-      <h3 className="font-[Space_Grotesk] text-lg font-medium leading-snug text-[#F0F0F5]">
+      {/* Question Text */}
+      <h3 className="font-[var(--font-heading)] text-xl font-bold leading-snug text-[var(--color-text-primary)]">
         {question.question}
       </h3>
 
-      {/* Options */}
-      <div className="mt-5 flex flex-col gap-3">
+      {/* Answer Options List */}
+      <div className="mt-6 flex flex-col gap-3">
         {question.options.map((opt, i) => {
           const isSelected = selected === i;
           const isCorrectOpt = i === question.correctOption;
           const showState = selected !== null;
 
-          let stateClasses = "border-white/10 hover:border-[#00E5FF]/60";
-          if (showState && isCorrectOpt) {
-            stateClasses = "border-[#00E5FF] shadow-[0_0_0_1px_rgba(0,229,255,0.4)]";
-          } else if (showState && isSelected && !isCorrectOpt) {
-            stateClasses = "border-red-400 shadow-[0_0_0_1px_rgba(248,113,113,0.4)]";
+          // Default state configuration
+          let stateClasses = "border-[var(--border-color)] bg-[var(--color-background)] hover:border-[var(--color-primary)]/50 hover:bg-white/[0.02]";
+          
+          if (showState) {
+            if (isCorrectOpt) {
+              // Green/Success outline highlighting for the actual correct answer
+              stateClasses = "border-[var(--color-success)] bg-[var(--color-success)]/5 text-[var(--color-text-primary)] shadow-[0_0_12px_rgba(0,230,118,0.15)]";
+            } else if (isSelected && !isCorrectOpt) {
+              // Red/Error highlighting if user selected an incorrect option
+              stateClasses = "border-[var(--color-error)] bg-[var(--color-error)]/5 text-[var(--color-text-primary)] opacity-90";
+            } else {
+              // Dim down non-selected alternative wrong choices
+              stateClasses = "border-[var(--border-color)] opacity-40 cross-events-none";
+            }
           }
 
           return (
@@ -179,30 +190,37 @@ export default function TriviaQuiz() {
               onClick={() => handleSelect(i)}
               disabled={showState}
               aria-pressed={isSelected}
-              className={`min-h-[48px] rounded-md border bg-[#0A0A0F] px-4 py-3 text-left text-sm text-[#F0F0F5] transition-transform duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00E5FF] motion-reduce:transition-none ${stateClasses} ${
-                !showState ? "hover:scale-[1.02]" : ""
-              }`}
+              className={`min-h-[52px] rounded-[var(--radius-md)] border px-4 py-3 text-left text-sm font-medium transition-all duration-[var(--duration-fast)] ease-[var(--ease-snappy)] focus-visible:outline-2 focus-visible:outline-[var(--color-primary)] motion-reduce:transition-none ${stateClasses}`}
             >
-              {opt}
+              <div className="flex items-center justify-between">
+                <span>{opt}</span>
+                {showState && isCorrectOpt && (
+                  <span className="text-[var(--color-success)] text-xs font-mono font-bold ml-2">✓ Correct</span>
+                )}
+                {showState && isSelected && !isCorrectOpt && (
+                  <span className="text-[var(--color-error)] text-xs font-mono font-bold ml-2">✗ Incorrect</span>
+                )}
+              </div>
             </button>
           );
         })}
       </div>
 
-      {/* Explanation on wrong answer */}
+      {/* Feedback & Detailed Explanation Box */}
       {selected !== null && selected !== question.correctOption && (
-        <p className="mt-4 rounded-md border border-red-400/30 bg-red-400/5 p-3 font-mono text-xs leading-relaxed text-[#F0F0F5]">
-          {question.explanation}
-        </p>
+        <div className="mt-4 rounded-[var(--radius-md)] border border-[var(--color-error)]/20 bg-[var(--color-error)]/5 p-4 font-[var(--font-body)] text-xs leading-relaxed text-[var(--color-text-primary)]">
+          <p className="font-[var(--font-mono)] font-bold text-[var(--color-error)] mb-1">Context Breakdown:</p>
+          <p className="text-[var(--color-text-secondary)]">{question.explanation}</p>
+        </div>
       )}
 
-      {/* Next button */}
+      {/* Primary Action Call-to-action Button */}
       {selected !== null && (
         <button
           onClick={handleNext}
-          className="mt-6 w-full rounded-md bg-[#00E5FF] px-4 py-3 font-medium text-[#0A0A0F] transition-transform duration-150 hover:scale-[1.02] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00E5FF] motion-reduce:transition-none motion-reduce:hover:scale-100"
+          className="mt-6 w-full rounded-[var(--radius-md)] bg-[var(--color-primary)] px-4 py-3.5 text-sm font-bold text-[var(--color-background)] transition-all duration-[var(--duration-fast)] hover:brightness-110 focus-visible:outline-2 focus-visible:outline-[var(--color-primary)] shadow-[0_4px_20px_rgba(0,229,255,0.2)]"
         >
-          {current + 1 >= session.length ? "See Results" : "Next Question"}
+          {current + 1 >= session.length ? "See Final Results" : "Next Question"}
         </button>
       )}
     </div>
